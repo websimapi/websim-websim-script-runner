@@ -41,15 +41,22 @@ document.addEventListener('DOMContentLoaded', () => {
     function isPrecededByDataSource() {
         const textBeforeCursor = scriptInput.value.substring(0, scriptInput.selectionStart).trim();
         
-        // Match the last sequence of snake_case_words
-        const lastTokenMatch = textBeforeCursor.match(/[\w_]+$/);
+        // Split by operators to correctly identify the last token in an expression.
+        const expressionParts = textBeforeCursor.split(/_and_|_or_|_xor_|_as_/);
         
-        if (!lastTokenMatch) {
-            return false; // No token found before cursor
+        if (expressionParts.length === 0) {
+            return false;
         }
         
-        const lastToken = lastTokenMatch[0];
-        // Ensure the last token is one of the defined data sources
+        const lastToken = expressionParts[expressionParts.length - 1].trim();
+        
+        // If the last token is empty, it means the text ends with an operator or separator,
+        // so we are not preceded by a data source.
+        if (!lastToken) {
+            return false;
+        }
+
+        // Check if this last token is a valid data source
         return isDataSource(lastToken);
     }
 
