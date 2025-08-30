@@ -16,9 +16,21 @@ async function getCreator() {
 }
 
 const dataFetchers = {
-    projectTitle: async () => (await getProject())?.title ?? 'Untitled Project',
-    projectDescription: async () => (await getProject())?.description ?? '',
-    creatorUsername: async () => (await getCreator())?.username ?? 'Unknown Creator',
+    project_title: async () => (await getProject())?.title ?? 'Untitled Project',
+    project_description: async () => (await getProject())?.description ?? '',
+    creator_username: async () => (await getCreator())?.username ?? 'Unknown Creator',
+    creator_avatar_url: async () => {
+        const creator = await getCreator();
+        return creator?.username ? `https://images.websim.com/avatar/${creator.username}` : '';
+    },
+    creator_profile: async () => {
+        const creator = await getCreator();
+        const username = creator?.username ?? 'Unknown';
+        return {
+            text: username,
+            href: `https://websim.com/@${username}`
+        };
+    },
 };
 
 export async function getData(key) {

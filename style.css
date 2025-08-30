@@ -119,3 +119,11 @@ a:hover {
     background-color: #79bbff;
 }
 
+#output img {
+    max-width: 100px;
+    height: auto;
+    border-radius: 50%;
+    border: 2px solid #58a6ff;
+    display: block;
+    margin-bottom: 0.5rem;
+}

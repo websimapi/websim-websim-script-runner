@@ -2,24 +2,41 @@ import { getData } from 'data-provider';
 
 // A map of keywords to data retrieval keys
 const RENDER_KEYWORDS = {
-    PROJECT_TITLE: 'projectTitle',
-    PROJECT_DESCRIPTION: 'projectDescription',
-    CREATOR_USERNAME: 'creatorUsername',
+    project_title: 'project_title',
+    project_description: 'project_description',
+    creator_username: 'creator_username',
+    creator_avatar_url: 'creator_avatar_url',
+    creator_profile: 'creator_profile',
 };
 
 // A map of keywords to valid HTML tags for rendering
 const TAG_KEYWORDS = {
-    H1: 'h1',
-    H2: 'h2',
-    P: 'p',
-    DIV: 'div',
-    SPAN: 'span',
+    heading1: 'h1',
+    heading2: 'h2',
+    paragraph: 'p',
+    division: 'div',
+    span: 'span',
+    image: 'img',
+    link: 'a',
+};
+
+const SIMPLE_COMMANDS = {
+    horizontal_rule: 'hr',
 };
 
 async function parseAndExecuteCommand(command, outputElement) {
     if (!command || command.trim() === '') return;
 
-    const parts = command.split('_AS_');
+    const cmd = command.toLowerCase().trim();
+
+    if (SIMPLE_COMMANDS[cmd]) {
+        const tagName = SIMPLE_COMMANDS[cmd];
+        const element = document.createElement(tagName);
+        outputElement.appendChild(element);
+        return;
+    }
+
+    const parts = cmd.split('_as_');
     if (parts.length !== 2) {
         console.warn(`Invalid command format: ${command}`);
         return;
@@ -34,7 +51,7 @@ async function parseAndExecuteCommand(command, outputElement) {
         return;
     }
     if (!tagName) {
-        console.warn(`Unknown tag name: ${tagKey}`);
+        console.warn(`Unknown element type: ${tagKey}`);
         return;
     }
 
@@ -42,7 +59,18 @@ async function parseAndExecuteCommand(command, outputElement) {
         const content = await getData(dataKey);
         if (content !== null) {
             const element = document.createElement(tagName);
-            element.textContent = content;
+            
+            if (tagName === 'img') {
+                element.src = content;
+                element.alt = dataSourceKey.replace(/_/g, ' '); // Basic alt text
+            } else if (tagName === 'a' && typeof content === 'object') {
+                element.href = content.href;
+                element.textContent = content.text;
+                element.target = '_blank'; // Open links in new tab
+            } else {
+                element.textContent = content;
+            }
+            
             outputElement.appendChild(element);
         } else {
              console.warn(`No content found for: ${dataKey}`);
