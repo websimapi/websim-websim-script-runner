@@ -53,6 +53,8 @@
                     <button class="toolbox-btn" data-insert="_and_">_and_</button>
                     <button class="toolbox-btn" data-insert="_or_">_or_</button>
                     <button class="toolbox-btn" data-insert="_xor_">_xor_</button>
+                    <button class="toolbox-btn" data-insert="_xand_">_xand_</button>
+                    <button class="toolbox-btn" data-insert="not_">not_</button>
                 </div>
 
                 <div class="toolbox-section">
@@ -90,7 +92,8 @@
             <li><code>_and_</code>: Combines the text from both data sources. Example: <code>creator_username_and_project_title</code></li>
             <li><code>_or_</code>: Displays the first available data source. Example: <code>project_title_or_creator_username</code></li>
             <li><code>_xor_</code>: Displays the data source only if one of the two is available, but not both.</li>
-            <li><code>_nand_</code>: Displays a value only if one, but not both, of the data sources are available.</li>
+            <li><code>_xand_</code>: Displays the data source only if both are available, otherwise displays nothing.</li>
+            <li><code>not_</code>: A prefix operator that checks if a data source is empty. Returns "true" if empty, "false" otherwise. Example: <code>not_project_description</code>.</li>
         </ul>
         <p>You can chain operators, and they are evaluated from left to right. The result of the operation can be rendered as plain text or passed to an element type.</p>
         <p><strong>Example:</strong> <code>creator_username_and_project_title_as_paragraph</code></p>

@@ -33,20 +33,31 @@ const OPERATORS = {
     },
     _or_: (a, b) => a || b,
     _xor_: (a, b) => (a && !b) ? a : ((!a && b) ? b : ''),
-    _nand_: (a, b) => {
-        const valA = (typeof a === 'object' && a !== null) ? a.text : a;
-        const valB = (typeof b === 'object' && b !== null) ? b.text : b;
-        if (valA && valB) {
-            return '';
-        }
-        return a || b;
-    },
+    _xand_: (a, b) => (a && b) ? OPERATORS._and_(a, b) : '',
 };
+const UNARY_OPERATORS = {
+    not_: (a) => !a,
+};
+
 const OPERATOR_KEYS = Object.keys(OPERATORS);
+const UNARY_OPERATOR_KEYS = Object.keys(UNARY_OPERATORS);
 
 async function evaluateExpression(expression) {
-    // Split by operators, keeping operators in the result array for parsing
-    const parts = expression.split(/(_and_|_or_|_xor_|_nand_)/).filter(p => p);
+    // Handle unary prefix operators first
+    for (const opKey of UNARY_OPERATOR_KEYS) {
+        if (expression.startsWith(opKey)) {
+            const operandKey = expression.substring(opKey.length);
+            const dataKey = RENDER_KEYWORDS[operandKey];
+            if (dataKey) {
+                const value = await getData(dataKey);
+                return UNARY_OPERATORS[opKey](value); // will return true/false
+            }
+        }
+    }
+
+    // Split by binary operators, keeping operators in the result array for parsing
+    const opRegex = new RegExp(`(${OPERATOR_KEYS.join('|')})`);
+    const parts = expression.split(opRegex).filter(p => p);
     
     if (parts.length === 1) {
         const dataKey = RENDER_KEYWORDS[parts[0]];
@@ -123,7 +134,7 @@ async function parseAndExecuteCommand(command, outputElement) {
                 element.textContent = content.text;
                 element.target = '_blank'; // Open links in new tab
             } else {
-                 element.textContent = (typeof content === 'object' && content !== null) ? JSON.stringify(content, null, 2) : content;
+                 element.textContent = (typeof content === 'object' && content !== null) ? JSON.stringify(content, null, 2) : String(content);
             }
             outputElement.appendChild(element);
 

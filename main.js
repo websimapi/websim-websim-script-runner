@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const textBeforeCursor = scriptInput.value.substring(0, scriptInput.selectionStart).trim();
         
         // Split by operators to correctly identify the last token in an expression.
-        const expressionParts = textBeforeCursor.split(/_and_|_or_|_xor_|_as_/);
+        const expressionParts = textBeforeCursor.split(/_and_|_or_|_xor_|_xand_|_as_/);
         
         if (expressionParts.length === 0) {
             return false;
