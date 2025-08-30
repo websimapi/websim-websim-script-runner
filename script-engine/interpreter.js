@@ -24,6 +24,54 @@ const SIMPLE_COMMANDS = {
     horizontal_rule: 'hr',
 };
 
+const OPERATORS = {
+    _and_: (a, b) => {
+        const valA = (typeof a === 'object' && a !== null) ? a.text : a;
+        const valB = (typeof b === 'object' && b !== null) ? b.text : b;
+        if (valA && valB) return `${valA} | ${valB}`; // Use a separator for clarity
+        return valA || valB || '';
+    },
+    _or_: (a, b) => a || b,
+    _xor_: (a, b) => (a && !b) ? a : ((!a && b) ? b : ''),
+};
+const OPERATOR_KEYS = Object.keys(OPERATORS);
+
+async function evaluateExpression(expression) {
+    // Split by operators, keeping operators in the result array for parsing
+    const parts = expression.split(/(_and_|_or_|_xor_)/).filter(p => p);
+    
+    if (parts.length === 1) {
+        const dataKey = RENDER_KEYWORDS[parts[0]];
+        return dataKey ? await getData(dataKey) : null;
+    }
+
+    let result = null;
+    // The first part must be a data source
+    const firstDataKey = RENDER_KEYWORDS[parts[0]];
+    if (firstDataKey) {
+        result = await getData(firstDataKey);
+    } else {
+        return null; // Invalid start of expression
+    }
+
+    for (let i = 1; i < parts.length; i += 2) {
+        const operator = parts[i];
+        const nextOperandKey = parts[i + 1];
+        if (!OPERATOR_KEYS.includes(operator) || !nextOperandKey) {
+            console.warn(`Invalid expression part: ${operator}${nextOperandKey || ''}`);
+            return result; // return what we have so far
+        }
+        
+        const dataKey = RENDER_KEYWORDS[nextOperandKey.trim()];
+        if(dataKey) {
+            const nextValue = await getData(dataKey);
+            result = OPERATORS[operator](result, nextValue);
+        }
+    }
+
+    return result;
+}
+
 async function parseAndExecuteCommand(command, outputElement) {
     if (!command || command.trim() === '') return;
 
@@ -38,82 +86,55 @@ async function parseAndExecuteCommand(command, outputElement) {
     }
 
     const parts = cmd.split('_as_');
+    const expression = parts[0];
+    const tagKey = parts.length > 1 ? parts[1] : null;
 
-    // Handle "data_source_as_element" format
-    if (parts.length === 2) {
-        const [dataSourceKey, tagKey] = parts;
-        const dataKey = RENDER_KEYWORDS[dataSourceKey];
-        const tagName = TAG_KEYWORDS[tagKey];
+    try {
+        const content = await evaluateExpression(expression);
 
-        if (!dataKey) {
-            console.warn(`Unknown data source: ${dataSourceKey}`);
-            return;
-        }
-        if (!tagName) {
-            console.warn(`Unknown element type: ${tagKey}`);
+        if (content === null || content === '') {
+            if (expression) console.warn(`Expression "${expression}" yielded no content.`);
             return;
         }
 
-        try {
-            const content = await getData(dataKey);
-            if (content !== null) {
-                const element = document.createElement(tagName);
-                
-                if (tagName === 'img') {
-                    element.src = content;
-                    element.alt = dataSourceKey.replace(/_/g, ' '); // Basic alt text
-                } else if (tagName === 'a' && typeof content === 'object') {
-                    element.href = content.href;
-                    element.textContent = content.text;
-                    element.target = '_blank'; // Open links in new tab
-                } else {
-                    element.textContent = content;
-                }
-                
-                outputElement.appendChild(element);
+        // Render as element if tag is specified
+        if (tagKey) {
+            const tagName = TAG_KEYWORDS[tagKey];
+            if (!tagName) {
+                console.warn(`Unknown element type: ${tagKey}`);
+                return;
+            }
+
+            const element = document.createElement(tagName);
+            
+            if (tagName === 'img') {
+                element.src = content;
+                element.alt = expression.replace(/_/g, ' '); // Basic alt text
+            } else if (tagName === 'a' && typeof content === 'object') {
+                element.href = content.href;
+                element.textContent = content.text;
+                element.target = '_blank'; // Open links in new tab
             } else {
-                 console.warn(`No content found for: ${dataKey}`);
+                 element.textContent = (typeof content === 'object' && content !== null) ? JSON.stringify(content, null, 2) : content;
             }
-        } catch (error) {
-            console.error(`Error executing command "${command}":`, error);
-        }
-        return; // Command handled
-    }
-    
-    // Handle "data_source" as plain text
-    if (parts.length === 1) {
-        const dataSourceKey = parts[0];
-        const dataKey = RENDER_KEYWORDS[dataSourceKey];
+            outputElement.appendChild(element);
 
-        if (dataKey) {
-            try {
-                const content = await getData(dataKey);
-                if (content !== null) {
-                    let textContent;
-                    if (typeof content === 'object') {
-                        // For objects like creator_profile, stringify them for plain text output
-                        textContent = JSON.stringify(content, null, 2);
-                    } else {
-                        textContent = String(content);
-                    }
-                    // Wrap in a span to allow for styling and separation
-                    const span = document.createElement('span');
-                    span.textContent = textContent;
-                    span.style.marginRight = '0.5em'; // Add space between plain text items
-                    outputElement.appendChild(span);
-
-                } else {
-                    console.warn(`No content found for: ${dataKey}`);
-                }
-            } catch (error) {
-                console.error(`Error executing command "${command}":`, error);
+        } else { // Render as plain text
+             let textContent;
+            if (typeof content === 'object') {
+                textContent = content.text || JSON.stringify(content, null, 2);
+            } else {
+                textContent = String(content);
             }
-            return; // Command handled
+            const span = document.createElement('span');
+            span.textContent = textContent;
+            span.style.marginRight = '0.5em'; // Add space between plain text items
+            outputElement.appendChild(span);
         }
-    }
 
-    // If we reach here, the command is invalid
-    console.warn(`Invalid command format or unknown command: ${command}`);
+    } catch (error) {
+        console.error(`Error executing command "${command}":`, error);
+    }
 }
 
 export async function runScript(outputElement, commands) {

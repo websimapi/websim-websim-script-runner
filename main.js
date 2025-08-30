@@ -1,4 +1,5 @@
 import { runScript } from 'interpreter';
+import { isDataSource } from 'data-provider';
 
 document.addEventListener('DOMContentLoaded', () => {
     const outputElement = document.getElementById('output');
@@ -28,13 +29,25 @@ document.addEventListener('DOMContentLoaded', () => {
         scriptInput.selectionStart = scriptInput.selectionEnd = start + text.length;
     }
 
+    // Function to check if text before cursor is a data source
+    function isPrecededByDataSource() {
+        const textBeforeCursor = scriptInput.value.substring(0, scriptInput.selectionStart);
+        const lastWord = textBeforeCursor.split(/[\s\n_]+/).filter(Boolean).pop();
+        return lastWord && isDataSource(lastWord);
+    }
+
     runButton.addEventListener('click', executeScriptFromInput);
 
     toolboxButtons.forEach(button => {
         button.addEventListener('click', () => {
             const textToInsert = button.dataset.insert;
             if (textToInsert) {
-                insertAtCursor(textToInsert);
+                // Auto-insert "_and_" if clicking a data source after another data source
+                if (isDataSource(textToInsert) && isPrecededByDataSource()) {
+                    insertAtCursor(`_and_${textToInsert}`);
+                } else {
+                    insertAtCursor(textToInsert);
+                }
             }
         });
     });

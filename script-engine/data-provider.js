@@ -41,3 +41,6 @@ export async function getData(key) {
     return null;
 }
 
+export function isDataSource(key) {
+    return key in dataFetchers;
+}
