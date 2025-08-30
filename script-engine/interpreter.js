@@ -17,6 +17,8 @@ const TAG_KEYWORDS = {
 };
 
 async function parseAndExecuteCommand(command, outputElement) {
+    if (!command || command.trim() === '') return;
+
     const parts = command.split('_AS_');
     if (parts.length !== 2) {
         console.warn(`Invalid command format: ${command}`);
@@ -50,16 +52,13 @@ async function parseAndExecuteCommand(command, outputElement) {
     }
 }
 
-export async function runScript(outputElement) {
+export async function runScript(outputElement, commands) {
     outputElement.innerHTML = '';
-    const urlParams = new URLSearchParams(window.location.search);
-    const commands = urlParams.getAll('render');
 
-    if (commands.length === 0) {
+    if (!commands || commands.length === 0) {
         return;
     }
 
     const commandPromises = commands.map(cmd => parseAndExecuteCommand(cmd, outputElement));
     await Promise.all(commandPromises);
 }
-

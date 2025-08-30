@@ -18,9 +18,49 @@
 <body>
     <header>
         <h1>WebSim Script Runner</h1>
-        <p>This page runs scripts provided in the URL. Try adding <code>?render=PROJECT_TITLE_AS_H1</code> to the URL.</p>
     </header>
-    <main id="output"></main>
+
+    <main>
+        <div id="editor-container">
+            <label for="script-input">Enter script commands (one per line):</label>
+            <textarea id="script-input" rows="4" placeholder="PROJECT_TITLE_AS_H1&#10;CREATOR_USERNAME_AS_P"></textarea>
+            <button id="run-button">Run Script</button>
+        </div>
+        <div id="output"></div>
+    </main>
+
+    <section id="documentation">
+        <h2>Scripting Language Guide</h2>
+        <p>Use this tool to render project metadata as HTML elements. You can type commands in the text box above and click "Run Script", or provide them directly in the URL.</p>
+
+        <h3>URL-based Scripting</h3>
+        <p>To run a script from the URL, use the <code>render</code> query parameter. You can use multiple <code>render</code> parameters for multiple commands.</p>
+        <p><strong>Format:</strong> <code>?render=&lt;DATA_SOURCE&gt;_AS_&lt;HTML_TAG&gt;</code></p>
+        <p><strong>Example:</strong> <a href="?render=PROJECT_TITLE_AS_H1&render=CREATOR_USERNAME_AS_P"><code>?render=PROJECT_TITLE_AS_H1&render=CREATOR_USERNAME_AS_P</code></a></p>
+
+        <h3>Available Data Sources</h3>
+        <ul>
+            <li><code>PROJECT_TITLE</code>: The title of the current project.</li>
+            <li><code>PROJECT_DESCRIPTION</code>: The description of the current project.</li>
+            <li><code>CREATOR_USERNAME</code>: The username of the project creator.</li>
+        </ul>
+
+        <h3>Available HTML Tags</h3>
+        <ul>
+            <li><code>H1</code>, <code>H2</code>: Heading elements.</li>
+            <li><code>P</code>: Paragraph element.</li>
+            <li><code>DIV</code>: Division (container) element.</li>
+            <li><code>SPAN</code>: Inline text container.</li>
+        </ul>
+        
+        <h3>Examples</h3>
+        <p>To display the project title as a main heading:</p>
+        <code>PROJECT_TITLE_AS_H1</code>
+        <p>To display the creator's username in a paragraph, followed by the project description:</p>
+        <pre><code>CREATOR_USERNAME_AS_P
+PROJECT_DESCRIPTION_AS_P</code></pre>
+    </section>
+
     <script type="module" src="main.js"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
