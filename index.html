@@ -21,48 +21,132 @@
     </header>
 
     <main>
-        <div id="editor-container">
-            <label for="script-input">Enter script commands (one per line):</label>
-            <textarea id="script-input" rows="4" placeholder="PROJECT_TITLE_AS_H1&#10;CREATOR_USERNAME_AS_P"></textarea>
-            <button id="run-button">Run Script</button>
+        <div id="sandbox-container">
+            <div id="editor-column">
+                <div id="editor-container">
+                    <label for="script-input">Enter script commands:</label>
+                    <div id="highlighting-wrapper">
+                        <pre id="highlighter" aria-hidden="true"><code></code></pre>
+                        <textarea id="script-input" rows="5" placeholder="project_title_as_heading_one&#10;creator_profile_as_link" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+                    </div>
+                    <button id="run-button">Run Script</button>
+                </div>
+                <div id="output"></div>
+            </div>
+            <div id="toolbox-column">
+                <h2>Toolbox</h2>
+                <p>Click buttons to add script parts to the editor.</p>
+                
+                <div class="toolbox-section">
+                    <h3>Data Sources</h3>
+                    <button class="toolbox-btn" data-insert="project_title">project_title</button>
+                    <button class="toolbox-btn" data-insert="project_description">project_description</button>
+                    <button class="toolbox-btn" data-insert="creator_username">creator_username</button>
+                    <button class="toolbox-btn" data-insert="creator_avatar_url">creator_avatar_url</button>
+                    <button class="toolbox-btn" data-insert="creator_profile">creator_profile</button>
+                </div>
+                
+                <div class="toolbox-section">
+                    <h3>Separator</h3>
+                    <button class="toolbox-btn" data-insert="_as_">_as_</button>
+                </div>
+
+                <div class="toolbox-section">
+                    <h3>Operators</h3>
+                    <button class="toolbox-btn" data-insert="_and_">_and_</button>
+                    <button class="toolbox-btn" data-insert="_or_">_or_</button>
+                    <button class="toolbox-btn" data-insert="_xor_">_xor_</button>
+                    <button class="toolbox-btn" data-insert="_xand_">_xand_</button>
+                    <button class="toolbox-btn" data-insert="not_">not_</button>
+                </div>
+
+                <div class="toolbox-section">
+                    <h3>Element Types</h3>
+                    <button class="toolbox-btn" data-insert="heading_one">heading_one</button>
+                    <button class="toolbox-btn" data-insert="heading_two">heading_two</button>
+                    <button class="toolbox-btn" data-insert="paragraph">paragraph</button>
+                    <button class="toolbox-btn" data-insert="division">division</button>
+                    <button class="toolbox-btn" data-insert="span">span</button>
+                    <button class="toolbox-btn" data-insert="image">image</button>
+                    <button class="toolbox-btn" data-insert="link">link</button>
+                </div>
+
+                <div class="toolbox-section">
+                    <h3>Simple Commands</h3>
+                    <button class="toolbox-btn" data-insert="horizontal_rule">horizontal_rule</button>
+                </div>
+            </div>
         </div>
-        <div id="output"></div>
     </main>
 
     <section id="documentation">
         <h2>Scripting Language Guide</h2>
         <p>Use this tool to render project metadata as HTML elements. You can type commands in the text box above and click "Run Script", or provide them directly in the URL.</p>
+        <p><strong>Note:</strong> All commands and keywords must be in <strong>lowercase snake_case</strong>.</p>
 
         <h3>URL-based Scripting</h3>
         <p>To run a script from the URL, use the <code>render</code> query parameter. You can use multiple <code>render</code> parameters for multiple commands.</p>
-        <p><strong>Format:</strong> <code>?render=&lt;DATA_SOURCE&gt;_AS_&lt;HTML_TAG&gt;</code></p>
-        <p><strong>Example:</strong> <a href="?render=PROJECT_TITLE_AS_H1&render=CREATOR_USERNAME_AS_P"><code>?render=PROJECT_TITLE_AS_H1&render=CREATOR_USERNAME_AS_P</code></a></p>
+        <p><strong>Format:</strong> <code>?render=&lt;data_source&gt;_as_&lt;element_type&gt;</code></p>
+        <p><strong>Example:</strong> <a href="?render=project_title_as_heading_one&render=creator_profile_as_link"><code>?render=project_title_as_heading_one&render=creator_profile_as_link</code></a></p>
+
+        <h3>Logical Operators</h3>
+        <p>You can combine multiple data sources using logical operators before rendering them.</p>
+        <ul>
+            <li><code>_and_</code>: Combines the text from both data sources. Example: <code>creator_username_and_project_title</code></li>
+            <li><code>_or_</code>: Displays the first available data source. Example: <code>project_title_or_creator_username</code></li>
+            <li><code>_xor_</code>: Displays the data source only if one of the two is available, but not both.</li>
+            <li><code>_xand_</code>: Displays the data source only if both are available, otherwise displays nothing.</li>
+            <li><code>not_</code>: A prefix operator that checks if a data source is empty. Returns "true" if empty, "false" otherwise. Example: <code>not_project_description</code>.</li>
+        </ul>
+        <p>You can chain operators, and they are evaluated from left to right. The result of the operation can be rendered as plain text or passed to an element type.</p>
+        <p><strong>Example:</strong> <code>creator_username_and_project_title_as_paragraph</code></p>
 
         <h3>Available Data Sources</h3>
         <ul>
-            <li><code>PROJECT_TITLE</code>: The title of the current project.</li>
-            <li><code>PROJECT_DESCRIPTION</code>: The description of the current project.</li>
-            <li><code>CREATOR_USERNAME</code>: The username of the project creator.</li>
+            <li><code>project_title</code>: The title of the current project.</li>
+            <li><code>project_description</code>: The description of the current project.</li>
+            <li><code>creator_username</code>: The username of the project creator.</li>
+            <li><code>creator_avatar_url</code>: The URL for the creator's avatar image.</li>
+            <li><code>creator_profile</code>: An object containing the creator's username and profile URL. Used with the <code>link</code> element.</li>
         </ul>
 
-        <h3>Available HTML Tags</h3>
+        <h3>Rendering Modes</h3>
+        <ol>
+            <li><strong>As an Element:</strong> Use <code>data_source_as_element_type</code> to wrap the data in a specific HTML element.</li>
+            <li><strong>As Plain Text:</strong> Use just the <code>data_source</code> name to render the raw data as text.</li>
+        </ol>
+
+        <h3>Available Element Types</h3>
         <ul>
-            <li><code>H1</code>, <code>H2</code>: Heading elements.</li>
-            <li><code>P</code>: Paragraph element.</li>
-            <li><code>DIV</code>: Division (container) element.</li>
-            <li><code>SPAN</code>: Inline text container.</li>
+            <li><code>heading_one</code>, <code>heading_two</code>: Heading elements (h1, h2).</li>
+            <li><code>paragraph</code>: A paragraph element.</li>
+            <li><code>division</code>: A division (container) element.</li>
+            <li><code>span</code>: An inline text container.</li>
+            <li><code>image</code>: An image element. Best used with a URL data source like <code>creator_avatar_url</code>.</li>
+            <li><code>link</code>: An anchor/link element. Best used with the <code>creator_profile</code> data source.</li>
+        </ul>
+
+        <h3>Simple Commands</h3>
+        <p>Some commands don't require a data source.</p>
+        <ul>
+            <li><code>horizontal_rule</code>: Renders a horizontal line (`&lt;hr&gt;`).</li>
         </ul>
         
         <h3>Examples</h3>
-        <p>To display the project title as a main heading:</p>
-        <code>PROJECT_TITLE_AS_H1</code>
-        <p>To display the creator's username in a paragraph, followed by the project description:</p>
-        <pre><code>CREATOR_USERNAME_AS_P
-PROJECT_DESCRIPTION_AS_P</code></pre>
+        <p>Display the project title as a main heading, followed by a link to the creator's profile.</p>
+        <pre><code>project_title_as_heading_one
+creator_profile_as_link</code></pre>
+
+        <p>Combine creator username and project title with " | " in between, and render as a heading.</p>
+        <pre><code>creator_username_and_project_title_as_heading_two</code></pre>
+
+        <p>Display the creator's avatar, followed by their username as plain text, and then the project description.</p>
+        <pre><code>creator_avatar_url_as_image
+creator_username
+project_description_as_paragraph</code></pre>
     </section>
 
     <script type="module" src="main.js"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
-
