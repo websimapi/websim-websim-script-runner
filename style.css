@@ -127,6 +127,7 @@ a:hover {
     position: relative;
     width: 100%;
     height: auto;
+    display: grid;
 }
 
 #script-input, #highlighter {
@@ -135,39 +136,40 @@ a:hover {
     border: 1px solid #444;
     border-radius: 4px;
     font-family: 'Courier New', Courier, monospace;
-    font-size: 1em; /* Ensure consistent font size */
-    line-height: 1.5; /* Ensure consistent line height */
+    font-size: 1em;
+    line-height: 1.5;
     box-sizing: border-box;
     width: 100%;
-    min-height: 80px;
+    min-height: 200px;
     white-space: pre-wrap;
     word-wrap: break-word;
+    grid-area: 1 / 1 / 2 / 2; /* Make them overlap */
 }
 
 #script-input {
-    position: relative;
     z-index: 1;
     background-color: transparent;
-    color: transparent; /* Make text transparent */
-    caret-color: #e0e0e0; /* But keep the caret visible */
+    color: transparent;
+    caret-color: #e0e0e0;
     resize: vertical;
 }
 
 #highlighter {
-    position: absolute;
-    top: 0;
-    left: 0;
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
-    display: block;
     color: #e0e0e0;
 }
 
 #highlighter code {
-    display: block;
+    padding: 0;
+    margin: 0;
+    background: none;
     font-family: inherit;
     font-size: inherit;
+    line-height: inherit; /* Inherit line-height */
+    white-space: inherit; /* Inherit wrapping behavior */
+    word-wrap: inherit;
 }
 
 #run-button {
