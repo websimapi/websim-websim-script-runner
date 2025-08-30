@@ -1,4 +1,4 @@
-import { runScript } from 'interpreter';
+import { runScript, RENDER_KEYWORDS, TAG_KEYWORDS, SIMPLE_COMMANDS, OPERATOR_KEYWORDS, SEPARATOR_KEYWORDS } from 'interpreter';
 import { isDataSource } from 'data-provider';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -6,11 +6,64 @@ document.addEventListener('DOMContentLoaded', () => {
     const scriptInput = document.getElementById('script-input');
     const runButton = document.getElementById('run-button');
     const toolboxButtons = document.querySelectorAll('.toolbox-btn');
+    const highlighter = document.getElementById('highlighter');
+    const highlighterCode = highlighter.querySelector('code');
 
-    if (!outputElement || !scriptInput || !runButton) {
+    if (!outputElement || !scriptInput || !runButton || !highlighter) {
         console.error('Required UI elements not found.');
         return;
     }
+
+    // --- Syntax Highlighting Logic ---
+    const allKeywords = [
+        ...Object.keys(RENDER_KEYWORDS),
+        ...SEPARATOR_KEYWORDS,
+        ...OPERATOR_KEYWORDS,
+        ...Object.keys(TAG_KEYWORDS),
+        ...Object.keys(SIMPLE_COMMANDS)
+    ];
+
+    const keywordToClassMap = {
+        datasource: new Set(Object.keys(RENDER_KEYWORDS)),
+        separator: new Set(SEPARATOR_KEYWORDS),
+        operator: new Set(OPERATOR_KEYWORDS),
+        element: new Set(Object.keys(TAG_KEYWORDS)),
+        command: new Set(Object.keys(SIMPLE_COMMANDS)),
+    };
+
+    function getTokenType(token) {
+        for (const type in keywordToClassMap) {
+            if (keywordToClassMap[type].has(token)) {
+                return `token-${type}`;
+            }
+        }
+        return 'token-unknown';
+    }
+
+    const tokenizerRegex = new RegExp(`(${allKeywords.join('|')})`, 'g');
+
+    function escapeHtml(text) {
+        return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function updateHighlighter() {
+        const text = scriptInput.value;
+        const escapedText = escapeHtml(text);
+        
+        const highlightedHtml = escapedText.replace(tokenizerRegex, (match) => {
+            const tokenClass = getTokenType(match);
+            return `<span class="${tokenClass}">${match}</span>`;
+        });
+        
+        // Add a newline to prevent editor collapsing on empty last line
+        highlighterCode.innerHTML = highlightedHtml + '\n';
+    }
+
+    function syncScroll() {
+        highlighter.scrollTop = scriptInput.scrollTop;
+        highlighter.scrollLeft = scriptInput.scrollLeft;
+    }
+    // --- End Syntax Highlighting ---
 
     function executeScriptFromInput() {
         const commands = scriptInput.value.split('\n').filter(line => line.trim() !== '');
@@ -35,6 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
         scriptInput.value = newText;
         scriptInput.focus();
         scriptInput.selectionStart = scriptInput.selectionEnd = start + textToInsert.length;
+        
+        // Manually trigger input event for highlighter update
+        scriptInput.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
     // Function to check if the token immediately before the cursor is a data source.
@@ -62,6 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     runButton.addEventListener('click', executeScriptFromInput);
 
+    scriptInput.addEventListener('input', updateHighlighter);
+    scriptInput.addEventListener('scroll', syncScroll);
+
     toolboxButtons.forEach(button => {
         button.addEventListener('click', () => {
             const textToInsert = button.dataset.insert;
@@ -83,4 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scriptInput.value = urlCommands.join('\n');
         runScript(outputElement, urlCommands);
     }
+    
+    // Initial highlight
+    updateHighlighter();
 });

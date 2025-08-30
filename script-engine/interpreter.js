@@ -1,7 +1,7 @@
 import { getData } from 'data-provider';
 
 // A map of keywords to data retrieval keys
-const RENDER_KEYWORDS = {
+export const RENDER_KEYWORDS = {
     project_title: 'project_title',
     project_description: 'project_description',
     creator_username: 'creator_username',
@@ -10,7 +10,7 @@ const RENDER_KEYWORDS = {
 };
 
 // A map of keywords to valid HTML tags for rendering
-const TAG_KEYWORDS = {
+export const TAG_KEYWORDS = {
     heading_one: 'h1',
     heading_two: 'h2',
     paragraph: 'p',
@@ -20,7 +20,7 @@ const TAG_KEYWORDS = {
     link: 'a',
 };
 
-const SIMPLE_COMMANDS = {
+export const SIMPLE_COMMANDS = {
     horizontal_rule: 'hr',
 };
 
@@ -38,6 +38,9 @@ const OPERATORS = {
 const UNARY_OPERATORS = {
     not_: (a) => !a,
 };
+
+export const OPERATOR_KEYWORDS = [...Object.keys(OPERATORS), ...Object.keys(UNARY_OPERATORS)];
+export const SEPARATOR_KEYWORDS = ['_as_'];
 
 const OPERATOR_KEYS = Object.keys(OPERATORS);
 const UNARY_OPERATOR_KEYS = Object.keys(UNARY_OPERATORS);

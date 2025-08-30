@@ -25,7 +25,10 @@
             <div id="editor-column">
                 <div id="editor-container">
                     <label for="script-input">Enter script commands:</label>
-                    <textarea id="script-input" rows="5" placeholder="project_title_as_heading_one&#10;creator_profile_as_link"></textarea>
+                    <div id="highlighting-wrapper">
+                        <pre id="highlighter" aria-hidden="true"><code></code></pre>
+                        <textarea id="script-input" rows="5" placeholder="project_title_as_heading_one&#10;creator_profile_as_link" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+                    </div>
                     <button id="run-button">Run Script</button>
                 </div>
                 <div id="output"></div>

@@ -17,6 +17,14 @@ header, main, section#documentation {
     max-width: 95%;
 }
 
+/* Highlighting Styles */
+.token-datasource { color: #87ceeb; }
+.token-separator { color: #f08080; }
+.token-operator { color: #ffd700; }
+.token-element { color: #98fb98; }
+.token-command { color: #d8aaff; }
+.token-unknown { color: #e0e0e0; }
+
 @media (min-width: 1024px) {
     header, main, section#documentation {
         max-width: 1200px;
@@ -115,17 +123,51 @@ a:hover {
     gap: 0.5rem;
 }
 
-#script-input {
+#highlighting-wrapper {
+    position: relative;
     width: 100%;
-    box-sizing: border-box;
-    background-color: #1a1a1a;
-    color: #e0e0e0;
+    height: auto;
+}
+
+#script-input, #highlighter {
+    margin: 0;
+    padding: 0.5rem;
     border: 1px solid #444;
     border-radius: 4px;
-    padding: 0.5rem;
     font-family: 'Courier New', Courier, monospace;
-    resize: vertical;
+    font-size: 1em; /* Ensure consistent font size */
+    line-height: 1.5; /* Ensure consistent line height */
+    box-sizing: border-box;
+    width: 100%;
     min-height: 80px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+#script-input {
+    position: relative;
+    z-index: 1;
+    background-color: transparent;
+    color: transparent; /* Make text transparent */
+    caret-color: #e0e0e0; /* But keep the caret visible */
+    resize: vertical;
+}
+
+#highlighter {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    display: block;
+    color: #e0e0e0;
+}
+
+#highlighter code {
+    display: block;
+    font-family: inherit;
+    font-size: inherit;
 }
 
 #run-button {
