@@ -22,25 +22,34 @@ document.addEventListener('DOMContentLoaded', () => {
         const start = scriptInput.selectionStart;
         const end = scriptInput.selectionEnd;
         const currentText = scriptInput.value;
-        const newText = currentText.substring(0, start) + text + currentText.substring(end);
+        
+        // Add a space if the preceding character is not a space or newline and the inserted text doesn't start with one.
+        const precedingChar = currentText.substring(start - 1, start);
+        let textToInsert = text;
+        if (start > 0 && !/\s/.test(precedingChar) && !/^_/.test(textToInsert)) {
+            textToInsert = ' ' + textToInsert;
+        }
+
+        const newText = currentText.substring(0, start) + textToInsert + currentText.substring(end);
         
         scriptInput.value = newText;
         scriptInput.focus();
-        scriptInput.selectionStart = scriptInput.selectionEnd = start + text.length;
+        scriptInput.selectionStart = scriptInput.selectionEnd = start + textToInsert.length;
     }
 
     // Function to check if the token immediately before the cursor is a data source.
     function isPrecededByDataSource() {
-        const textBeforeCursor = scriptInput.value.substring(0, scriptInput.selectionStart);
+        const textBeforeCursor = scriptInput.value.substring(0, scriptInput.selectionStart).trim();
         
-        // Match the last sequence of non-whitespace characters
-        const lastTokenMatch = textBeforeCursor.match(/\S+$/);
+        // Match the last sequence of snake_case_words
+        const lastTokenMatch = textBeforeCursor.match(/[\w_]+$/);
         
         if (!lastTokenMatch) {
             return false; // No token found before cursor
         }
         
         const lastToken = lastTokenMatch[0];
+        // Ensure the last token is one of the defined data sources
         return isDataSource(lastToken);
     }
 
