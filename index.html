@@ -86,6 +86,12 @@
             <li><code>creator_profile</code>: An object containing the creator's username and profile URL. Used with the <code>link</code> element.</li>
         </ul>
 
+        <h3>Rendering Modes</h3>
+        <ol>
+            <li><strong>As an Element:</strong> Use <code>data_source_as_element_type</code> to wrap the data in a specific HTML element.</li>
+            <li><strong>As Plain Text:</strong> Use just the <code>data_source</code> name to render the raw data as text.</li>
+        </ol>
+
         <h3>Available Element Types</h3>
         <ul>
             <li><code>heading_one</code>, <code>heading_two</code>: Heading elements (h1, h2).</li>
@@ -106,9 +112,10 @@
         <p>Display the project title as a main heading, followed by a link to the creator's profile.</p>
         <pre><code>project_title_as_heading_one
 creator_profile_as_link</code></pre>
-        <p>Display the creator's avatar, their username, and then the project description.</p>
+
+        <p>Display the creator's avatar, followed by their username as plain text, and then the project description.</p>
         <pre><code>creator_avatar_url_as_image
-creator_username_as_paragraph
+creator_username
 project_description_as_paragraph</code></pre>
     </section>
 
