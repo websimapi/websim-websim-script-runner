@@ -55,8 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return `<span class="${tokenClass}">${match}</span>`;
         });
         
-        // Add a newline to prevent editor collapsing on empty last line
-        highlighterCode.innerHTML = highlightedHtml + '\n';
+        // If the input is empty or ends with a newline, add a non-breaking space.
+        // This ensures the last line has height and prevents the highlighter from collapsing,
+        // which would misalign the cursor. Adding a full newline creates a visual mismatch.
+        if (text === '' || text.endsWith('\n')) {
+            highlighterCode.innerHTML = highlightedHtml + '&nbsp;';
+        } else {
+            highlighterCode.innerHTML = highlightedHtml;
+        }
     }
 
     function syncScroll() {
