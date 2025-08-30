@@ -11,8 +11,8 @@ const RENDER_KEYWORDS = {
 
 // A map of keywords to valid HTML tags for rendering
 const TAG_KEYWORDS = {
-    heading1: 'h1',
-    heading2: 'h2',
+    heading_one: 'h1',
+    heading_two: 'h2',
     paragraph: 'p',
     division: 'div',
     span: 'span',

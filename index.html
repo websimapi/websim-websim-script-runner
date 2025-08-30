@@ -21,12 +21,50 @@
     </header>
 
     <main>
-        <div id="editor-container">
-            <label for="script-input">Enter script commands (one per line):</label>
-            <textarea id="script-input" rows="4" placeholder="project_title_as_heading1&#10;creator_profile_as_link"></textarea>
-            <button id="run-button">Run Script</button>
+        <div id="sandbox-container">
+            <div id="editor-column">
+                <div id="editor-container">
+                    <label for="script-input">Enter script commands:</label>
+                    <textarea id="script-input" rows="5" placeholder="project_title_as_heading_one&#10;creator_profile_as_link"></textarea>
+                    <button id="run-button">Run Script</button>
+                </div>
+                <div id="output"></div>
+            </div>
+            <div id="toolbox-column">
+                <h2>Toolbox</h2>
+                <p>Click buttons to add script parts to the editor.</p>
+                
+                <div class="toolbox-section">
+                    <h3>Data Sources</h3>
+                    <button class="toolbox-btn" data-insert="project_title">project_title</button>
+                    <button class="toolbox-btn" data-insert="project_description">project_description</button>
+                    <button class="toolbox-btn" data-insert="creator_username">creator_username</button>
+                    <button class="toolbox-btn" data-insert="creator_avatar_url">creator_avatar_url</button>
+                    <button class="toolbox-btn" data-insert="creator_profile">creator_profile</button>
+                </div>
+                
+                <div class="toolbox-section">
+                    <h3>Separator</h3>
+                    <button class="toolbox-btn" data-insert="_as_">_as_</button>
+                </div>
+
+                <div class="toolbox-section">
+                    <h3>Element Types</h3>
+                    <button class="toolbox-btn" data-insert="heading_one">heading_one</button>
+                    <button class="toolbox-btn" data-insert="heading_two">heading_two</button>
+                    <button class="toolbox-btn" data-insert="paragraph">paragraph</button>
+                    <button class="toolbox-btn" data-insert="division">division</button>
+                    <button class="toolbox-btn" data-insert="span">span</button>
+                    <button class="toolbox-btn" data-insert="image">image</button>
+                    <button class="toolbox-btn" data-insert="link">link</button>
+                </div>
+
+                <div class="toolbox-section">
+                    <h3>Simple Commands</h3>
+                    <button class="toolbox-btn" data-insert="horizontal_rule">horizontal_rule</button>
+                </div>
+            </div>
         </div>
-        <div id="output"></div>
     </main>
 
     <section id="documentation">
@@ -37,7 +75,7 @@
         <h3>URL-based Scripting</h3>
         <p>To run a script from the URL, use the <code>render</code> query parameter. You can use multiple <code>render</code> parameters for multiple commands.</p>
         <p><strong>Format:</strong> <code>?render=&lt;data_source&gt;_as_&lt;element_type&gt;</code></p>
-        <p><strong>Example:</strong> <a href="?render=project_title_as_heading1&render=creator_profile_as_link"><code>?render=project_title_as_heading1&render=creator_profile_as_link</code></a></p>
+        <p><strong>Example:</strong> <a href="?render=project_title_as_heading_one&render=creator_profile_as_link"><code>?render=project_title_as_heading_one&render=creator_profile_as_link</code></a></p>
 
         <h3>Available Data Sources</h3>
         <ul>
@@ -50,7 +88,7 @@
 
         <h3>Available Element Types</h3>
         <ul>
-            <li><code>heading1</code>, <code>heading2</code>: Heading elements (h1, h2).</li>
+            <li><code>heading_one</code>, <code>heading_two</code>: Heading elements (h1, h2).</li>
             <li><code>paragraph</code>: A paragraph element.</li>
             <li><code>division</code>: A division (container) element.</li>
             <li><code>span</code>: An inline text container.</li>
@@ -66,10 +104,10 @@
         
         <h3>Examples</h3>
         <p>Display the project title as a main heading, followed by a link to the creator's profile.</p>
-        <pre><code>project_title_as_heading1
+        <pre><code>project_title_as_heading_one
 creator_profile_as_link</code></pre>
         <p>Display the creator's avatar, their username, and then the project description.</p>
-        <pre><code>creator_avatar_as_image
+        <pre><code>creator_avatar_url_as_image
 creator_username_as_paragraph
 project_description_as_paragraph</code></pre>
     </section>

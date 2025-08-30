@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const outputElement = document.getElementById('output');
     const scriptInput = document.getElementById('script-input');
     const runButton = document.getElementById('run-button');
+    const toolboxButtons = document.querySelectorAll('.toolbox-btn');
 
     if (!outputElement || !scriptInput || !runButton) {
         console.error('Required UI elements not found.');
@@ -15,7 +16,28 @@ document.addEventListener('DOMContentLoaded', () => {
         runScript(outputElement, commands);
     }
 
+    // Function to insert text at the cursor's position
+    function insertAtCursor(text) {
+        const start = scriptInput.selectionStart;
+        const end = scriptInput.selectionEnd;
+        const currentText = scriptInput.value;
+        const newText = currentText.substring(0, start) + text + currentText.substring(end);
+        
+        scriptInput.value = newText;
+        scriptInput.focus();
+        scriptInput.selectionStart = scriptInput.selectionEnd = start + text.length;
+    }
+
     runButton.addEventListener('click', executeScriptFromInput);
+
+    toolboxButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const textToInsert = button.dataset.insert;
+            if (textToInsert) {
+                insertAtCursor(textToInsert);
+            }
+        });
+    });
     
     // Also run script from URL on page load
     const urlParams = new URLSearchParams(window.location.search);
@@ -25,4 +47,3 @@ document.addEventListener('DOMContentLoaded', () => {
         runScript(outputElement, urlCommands);
     }
 });
-
