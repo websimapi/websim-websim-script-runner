@@ -29,11 +29,19 @@ document.addEventListener('DOMContentLoaded', () => {
         scriptInput.selectionStart = scriptInput.selectionEnd = start + text.length;
     }
 
-    // Function to check if text before cursor is a data source
+    // Function to check if the token immediately before the cursor is a data source.
     function isPrecededByDataSource() {
         const textBeforeCursor = scriptInput.value.substring(0, scriptInput.selectionStart);
-        const lastWord = textBeforeCursor.split(/[\s\n_]+/).filter(Boolean).pop();
-        return lastWord && isDataSource(lastWord);
+        
+        // Match the last sequence of non-whitespace characters
+        const lastTokenMatch = textBeforeCursor.match(/\S+$/);
+        
+        if (!lastTokenMatch) {
+            return false; // No token found before cursor
+        }
+        
+        const lastToken = lastTokenMatch[0];
+        return isDataSource(lastToken);
     }
 
     runButton.addEventListener('click', executeScriptFromInput);
