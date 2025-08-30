@@ -108,8 +108,8 @@ async function parseAndExecuteCommand(command, outputElement) {
     }
 
     const parts = cmd.split('_as_');
-    const expression = parts[0];
-    const tagKey = parts.length > 1 ? parts[1] : null;
+    const expression = parts[0].trim();
+    const tagKey = parts.length > 1 ? parts[1].trim() : null;
 
     try {
         const content = await evaluateExpression(expression);

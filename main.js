@@ -76,10 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const end = scriptInput.selectionEnd;
         const currentText = scriptInput.value;
         
-        // Add a space if the preceding character is not a space or newline and the inserted text doesn't start with one.
+        // Add a space if the preceding character is not a space/newline/underscore and the inserted text doesn't start with one.
         const precedingChar = currentText.substring(start - 1, start);
         let textToInsert = text;
-        if (start > 0 && !/\s/.test(precedingChar) && !/^_/.test(textToInsert)) {
+        if (start > 0 && !/[\s_]/.test(precedingChar) && !/^_/.test(textToInsert)) {
             textToInsert = ' ' + textToInsert;
         }
 
