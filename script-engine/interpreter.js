@@ -33,12 +33,20 @@ const OPERATORS = {
     },
     _or_: (a, b) => a || b,
     _xor_: (a, b) => (a && !b) ? a : ((!a && b) ? b : ''),
+    _nand_: (a, b) => {
+        const valA = (typeof a === 'object' && a !== null) ? a.text : a;
+        const valB = (typeof b === 'object' && b !== null) ? b.text : b;
+        if (valA && valB) {
+            return '';
+        }
+        return a || b;
+    },
 };
 const OPERATOR_KEYS = Object.keys(OPERATORS);
 
 async function evaluateExpression(expression) {
     // Split by operators, keeping operators in the result array for parsing
-    const parts = expression.split(/(_and_|_or_|_xor_)/).filter(p => p);
+    const parts = expression.split(/(_and_|_or_|_xor_|_nand_)/).filter(p => p);
     
     if (parts.length === 1) {
         const dataKey = RENDER_KEYWORDS[parts[0]];
