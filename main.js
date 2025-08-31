@@ -55,11 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return `<span class="${tokenClass}">${match}</span>`;
         });
         
-        // If the input is empty or ends with a newline, add a non-breaking space.
-        // This ensures the last line has height and prevents the highlighter from collapsing,
-        // which would misalign the cursor. Adding a full newline creates a visual mismatch.
-        if (text === '' || text.endsWith('\n')) {
-            highlighterCode.innerHTML = highlightedHtml + '&nbsp;';
+        // Ensure the highlighter content ends with a newline if the textarea does,
+        // or a non-breaking space if it's empty to prevent collapse.
+        if (highlightedHtml === '') {
+            highlighterCode.innerHTML = '&#8203;'; // Zero-width space to prevent collapse
         } else {
             highlighterCode.innerHTML = highlightedHtml;
         }

@@ -46,10 +46,11 @@ const OPERATOR_KEYS = Object.keys(OPERATORS);
 const UNARY_OPERATOR_KEYS = Object.keys(UNARY_OPERATORS);
 
 async function evaluateExpression(expression) {
+    const trimmedExpression = expression.trim();
     // Handle unary prefix operators first
     for (const opKey of UNARY_OPERATOR_KEYS) {
-        if (expression.startsWith(opKey)) {
-            const operandKey = expression.substring(opKey.length);
+        if (trimmedExpression.startsWith(opKey)) {
+            const operandKey = trimmedExpression.substring(opKey.length).trim();
             const dataKey = RENDER_KEYWORDS[operandKey];
             if (dataKey) {
                 const value = await getData(dataKey);
@@ -60,16 +61,18 @@ async function evaluateExpression(expression) {
 
     // Split by binary operators, keeping operators in the result array for parsing
     const opRegex = new RegExp(`(${OPERATOR_KEYS.join('|')})`);
-    const parts = expression.split(opRegex).filter(p => p);
+    const parts = trimmedExpression.split(opRegex).filter(p => p && p.trim() !== '');
     
+    if (parts.length === 0) return null;
+
     if (parts.length === 1) {
-        const dataKey = RENDER_KEYWORDS[parts[0]];
+        const dataKey = RENDER_KEYWORDS[parts[0].trim()];
         return dataKey ? await getData(dataKey) : null;
     }
 
     let result = null;
     // The first part must be a data source
-    const firstDataKey = RENDER_KEYWORDS[parts[0]];
+    const firstDataKey = RENDER_KEYWORDS[parts[0].trim()];
     if (firstDataKey) {
         result = await getData(firstDataKey);
     } else {
